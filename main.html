@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
 	<title>Electrons Application</title>
-
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
 <script type="text/javascript" src="./js/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -13,13 +11,40 @@
 	<link rel="stylesheet" type="text/css" href="css/color_1.css" id="colors-style">
 	<link rel="stylesheet" type="text/css" href="css/switcher.css">
 	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
-	
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<link rel="stylesheet" href="./css/css">
 </head>
+<style>
+    .modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
 
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
+}
+    
+</style>
 <body>
 	<div class="page_wrapper">
-			
+		<div class="modal"><!-- Place at bottom of page --></div>	
 <!-- Begin HorizontalTab style 1 -->
 		<section class="section-full dark-bg">
 
@@ -46,7 +71,7 @@
 								
 								<h2 class="resp-accordion hor_1 resp-tab-active" role="tab" aria-controls="hor_1_tab_item-0" style="background: none; border-color: rgb(193, 193, 193);"><span class="fc-icon"></span><i class="fc_icons fa fa-user"></i> <span class="tabs-text">Profile</span><i class="fa fa-angle-up arrow-tabs"></i></h2><div class="fc-tab-1 resp-tab-content hor_1 resp-tab-content-active" aria-labelledby="hor_1_tab_item-0" style="display:block">
 								
-									<h2 class="title_contanier">Welcome</h2>
+									<h2 class="title_contanier" id="count">Welcome</h2>
                                                                          
 									<p>Lorem ipsum dolor sit amet, sed in nostro latine, eu option appetere mediocritatem duo. Pro duis magna perpetua ea. Dicant epicurei gubergren eos ne, ad suas ornatus graecis nam, pri quot liber ignota no. Usu et erat propriae invenire, blandit voluptua vim at, iuvaret albucius cu ius. Te integre diceret praesent eos, impetus legimus te vim. Ne mollis veritus est. </p>
 									<p>This is a large paragraph. Mauris urna. Mauris velit parturient sit penatibus sed cras pulvinar, elementum vut, augue duis egestas nec platea diam dignissim, magnis! Etiam platea! Augue penatibus, porta. Turpis scelerisque ut, risus duis.</p>
@@ -57,19 +82,18 @@
 								<h2 class="resp-accordion hor_1" role="tab" aria-controls="hor_1_tab_item-1" style="background-color: rgb(245, 245, 245); border-color: rgb(193, 193, 193);"><span class="fc-icon"></span><i class="fc_icons fa fa-tasks"></i> <span class="tabs-text">Resume</span><i class="fa fa-angle-down arrow-tabs"></i></h2>
                                                                 <div class="fc-tab-2 resp-tab-content hor_1" aria-labelledby="hor_1_tab_item-1" style="border-color: rgb(193, 193, 193);">
                                                                         <h2 class="title_contanier">Add/Edit Configuration</h2>
-									<form role="form" action="" method="post" >
-                                                                            <div class="col-md-6">
+								            <div class="col-md-6">
                                                                                 <div class="form-group">
                                                                                     <label for="CenterID">Center ID</label>
                                                                                     <div class="input-group">
-                                                                                        <input type="text" class="form-control" name="CenterID" id="CenterID" placeholder="Center ID" required>
+                                                                                        <input type="text" class="form-control" name="CenterID" id="centerid" placeholder="Center ID" required>
                                                                                             <span class="input-group-addon"><i class="glyphicon glyphicon-ok form-control-feedback"></i></span>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="form-group">
                                                                                     <label for="SecretCode">Secret Code</label>
                                                                                     <div class="input-group">
-                                                                                        <input type="email" class="form-control" id="InputEmail" name="InputEmail" placeholder="Secret Code" required  >
+                                                                                        <input type="email" class="form-control" id="InputEmail" name="inputemail" placeholder="Secret Code" required  >
                                                                                             <span class="input-group-addon"><i class="glyphicon glyphicon-ok form-control-feedback"></i></span>
                                                                                     </div>
                                                                                 </div>
@@ -122,15 +146,19 @@
                                                                                             <span class="input-group-addon"><i class="glyphicon glyphicon-ok form-control-feedback"></i></span>
                                                                                     </div>
                                                                                 </div>
-                                                                                <button class="btn btn-lg btn-primary btn-block"  type="button">Submit</button>
+                                                                                <button class="btn btn-lg btn-primary btn-block"  id="saveconfig" type="button">Submits</button>
                                                                             </div>
-                                                                        </form>
 								</div>
 								
 								<h2 class="resp-accordion hor_1" role="tab" aria-controls="hor_1_tab_item-2" style="background-color: rgb(245, 245, 245); border-color: rgb(193, 193, 193);"><span class="fc-icon"></span><i class="fc_icons fa fa-briefcase"></i> <span class="tabs-text">Portfolio</span><i class="fa fa-angle-down arrow-tabs"></i></h2><div class="fc-tab-3 resp-tab-content hor_1" aria-labelledby="hor_1_tab_item-2" style="border-color: rgb(193, 193, 193);">
 								
 									<h2 class="title_contanier">Master Sync</h2>
-                                                                        <div class="col-lg-6 col-xs-6"><button class="btn btn-lg btn-primary btn-success pull-right"  type="button"><i class="fa fa-play"></i><span style="padding: 10px">Play</span></button></div>
+                                                                        <div class="col-lg-6 col-xs-6">
+<!--                                                                            <button id="btnmaster" class="btn btn-lg btn-primary btn-success pull-right"  type="button">
+                                                                                <i class="fa fa-play"></i><span style="padding: 10px">Play</span>
+                                                                            </button>-->
+                                                                            <button class="btn btn-lg btn-primary btn-block"  id="saveconfigs" type="button">Play</button>
+                                                                        </div>
                                                                         <div class="col-lg-6 col-xs-6"><button class="btn btn-lg btn-primary btn-danger"  type="button"><i class="fa fa-stop"></i><span style="padding: 10px">Stop</span></button></div>
                                               
 									<p>  download links will be here   </p>
@@ -176,7 +204,125 @@
 
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
 	<script type="text/javascript" src="./js/bootstrap.min.js"></script> 
-	<script type="text/javascript" src="./js/jquery.cookie.js"></script>	
+	<script type="text/javascript" src="./js/jquery.cookie.js"></script>
+        <script type="text/javascript">
+const electron  = require('electron')
+var fs = require('fs');
+const ipc  = electron.ipcRenderer
+
+$.support.cors = true;
+$("#saveconfigs").click(function(){
+  //  alert("btnMasterSync")
+     $("body").addClass("loading");
+    
+    ///////////////================================
+  var qry_str = 'http://odia.shikhya.org/get_all_export_files_site?'+'center_id=' + '46' + '&secret=' + "MHfE" + '&api_key=' + "Odap";  
+    var qry_str = 'http://odia.shikhya.org/get_all_export_files_site?center_id=46&secret=MHfE&api_key=Odap';
+    $.ajax({
+
+  // The 'type' property sets the HTTP method.
+  // A value of 'PUT' or 'DELETE' will trigger a preflight request.
+  type: 'GET',
+
+  // The URL to make the request to.
+   url: qry_str,
+
+  // The 'contentType' property sets the 'Content-Type' header.
+  // The JQuery default for this property is
+  // 'application/x-www-form-urlencoded; charset=UTF-8', which does not trigger
+  // a preflight. If you set this value to anything other than
+  // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
+  // you will trigger a preflight request.
+  contentType: 'text/plain',
+ headers: {
+        'Access-Control-Allow-Origin':'*',
+ //       'X_CSRF_TOKEN':'xxxxxxxxxxxxxxxxxxxx',
+        'Content-Type':'application/json'
+    },
+  xhrFields: {
+    // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
+    // This can be used to set the 'withCredentials' property.
+    // Set the value to 'true' if you'd like to pass cookies to the server.
+    // If this is enabled, your server must respond with the header
+    // 'Access-Control-Allow-Credentials: true'.
+    withCredentials: false
+  },
+
+  headers: {
+    // Set any custom headers here.
+    // If you set any non-simple headers, your server must include these
+    // headers in the 'Access-Control-Allow-Headers' response header.
+  },
+
+  success: function(data) {
+    // Here's where you handle a successful response.
+    $("body").removeClass("loading");
+//    var filesObj = JSON.parse('{ "name":"John", "age":30, "city":"New York"}');
+//    alert(filesObj);
+  //var StdJson = JSON.stringify(stdData);
+        fs.writeFile("msterData.json", data, (err) => {
+            if (err) {
+                alert("An error ocurred updating the file" + err.message);
+              //  console.log(err);
+                return;
+            }
+
+            alert("The file has been succesfully saved");
+        });
+    console.log(filesObj);
+  },
+
+  error: function() {
+      alert("fail");
+    // Here's where you handle an error response.
+    // Note that if the error was due to a CORS issue,
+    // this function will still fire, but there won't be any additional
+    // information about the error.
+  }
+});
+    
+});
+$("#saveconfig").click(function(){
+    alert("The file has been succesfully ");
+        var stdData = {
+                        CenterID: document.getElementById('centerid').value,
+                        InputEmail: document.getElementById('InputEmail').value,
+                        APIKey: document.getElementById('APIKey').value,
+                        Bucket: document.getElementById('Bucket').value,
+                        OnlinesServe: document.getElementById('OnlinesServe').value,
+                        OfflineServer: document.getElementById('OfflineServer').value,
+                        LogDirectorys: document.getElementById('LogDirectorys').value,
+                        MasterDirectory: document.getElementById('MasterDirectory').value,
+                        SlaveDirectory: document.getElementById('SlaveDirectory').value,
+                      }
+        //   //reset values    
+//    document.getElementById('centerid').value = ''
+//    document.getElementById('InputEmail').value = ''
+//    document.getElementById('APIKey').value = ''
+//    document.getElementById('Bucket').value = ''
+//    document.getElementById('OnlinesServe').value = ''
+//    document.getElementById('OfflineServer').value = ''
+//    document.getElementById('LogDirectorys').value = ''
+//    document.getElementById('MasterDirectory').value = ''
+//    document.getElementById('SlaveDirectory').value = ''
+    
+    
+        var StdJson = JSON.stringify(stdData);
+        fs.writeFile("config.json", StdJson, (err) => {
+            if (err) {
+                alert("An error ocurred updating the file" + err.message);
+              //  console.log(err);
+                return;
+            }
+
+            alert("The file has been succesfully saved");
+        });
+   
+   
+});
+                   
+      </script>
+      <!--<script type="text/javascript" src="./assets/js/rendrer.js"></script>-->
 	<script type="text/javascript" src="./js/switcher.js"></script>
 		<script type="text/javascript" src="./js/easyResponsiveTabs.js"></script>
 	<script type="text/javascript" src="./js/jquery.nicescroll.min.js"></script>

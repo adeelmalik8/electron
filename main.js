@@ -1,26 +1,28 @@
 //handle setupevents as quickly as possible
-const setupEvents = require('./installers/setupEvents')
-if (setupEvents.handleSquirrelEvent()) {
-  // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  return;
-}
-
+//const setupEvents = require('./installers/setupEvents')
+//if (setupEvents.handleSquirrelEvent()) {
+//  // squirrel event handled and app will exit in 1000ms, so don't do anything else
+//  return;
+//}
+const url       = require('url')
+const fs = require('fs')
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
-const {ipcMain} = require('electron')
+//const ipc  = electron.ipcMain
 var path = require('path')
-
+const countdown = require('./assets/js/countdown.js')
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 //Adds the main Menu to our app
-
+const ipc  = electron.ipcMain
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 let secondWindow
 
 function createWindow () {
+    console.log("Hi this is testing app")
   // Create the browser window.
   mainWindow = new BrowserWindow({titleBarStyle: 'hidden',
     width: 1281,
@@ -33,7 +35,15 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/main.html`)
+  //console.log(__dirname)
+ // mainWindow.loadURL(`file://${__dirname}/main.html`)
+mainWindow.loadURL(
+            url.format({
+                pathname:path.join(__dirname ,'main.html'),
+                protocal:'file',
+                slashes: true
+            })
+     )
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
@@ -52,34 +62,49 @@ function createWindow () {
     mainWindow = null
   })
 
-  secondWindow = new BrowserWindow({frame: false,
-    width: 800,
-    height: 600,
-    minWidth: 800,
-    minHeight: 600,
-    backgroundColor: '#312450',
-    show: false,
-    icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
-    parent: mainWindow
-  })
-
-  secondWindow.loadURL(`file://${__dirname}/windows/ipcwindow.html`)
- mainWindow.setMenu(null)
-  //require('./menu/mainmenu')
+mainWindow.setMenu(null)
 }
-
-ipcMain.on('open-second-window', (event, arg)=> {
-    secondWindow.show()
-})
-
-ipcMain.on('close-second-window', (event, arg)=> {
-    secondWindow.hide()
-})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+//app.on('ready', createWindow)
+app.on('ready',_=>{
+    createWindow()
+     mainWindow.webContents.on('did-finish-load', function() {
+         // read file 
+         fs.exists('./config.json', (exists) => {
+           // console.log(exists ? 'it\'s there' : 'no passwd!');
+            if(exists){
+                
+                fs.readFile("./config.json", 'utf-8', (err, data) => {
+                    if(err){
+                        console.log("An error ocurred reading the file :" + err.message);
+                        return;
+                    }
+                    // Change how to handle the file content
+                        var obj = JSON.parse(data)
+                        console.log(obj);
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="CenterID"]').value="`+obj.CenterID+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="InputEmail"]').value="`+obj.InputEmail+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="APIKey"]').value="`+obj.APIKey+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="Bucket"]').value="`+obj.Bucket+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="OnlinesServe"]').value="`+obj.OnlinesServe+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="OfflineServer"]').value="`+obj.OfflineServer+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="LogDirectorys"]').value="`+obj.LogDirectorys+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="MasterDirectory"]').value="`+obj.MasterDirectorys+`"`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector('input[name="SlaveDirectory"]').value="`+obj.SlaveDirectory+`"`)
+                })
+                
+            }else{
+                console.log("no file")
+            }
+            
+            
+          });
+     })
+     })
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -100,3 +125,12 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+ipc.on("countdown-start",_ =>{
+    console.log("HI testing Click Count Down");
+     countdown(count=>{
+           console.log("count,",count)
+         mainwindow.webContents.send('countdown',count)
+     })
+
+   
+})

@@ -1,0 +1,14 @@
+{
+  "name": "oresoft",
+  "version": "1.0.0",
+  "description": "This application for Oresoft File Transfer",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^1.7.10"
+  }
+}

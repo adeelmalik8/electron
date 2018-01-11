@@ -1,210 +1,90 @@
-/*
-	Hyperspace by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
+//handle setupevents as quickly as possible
+//const setupEvents = require('./installers/setupEvents')
+//if (setupEvents.handleSquirrelEvent()) {
+//  // squirrel event handled and app will exit in 1000ms, so don't do anything else
+//  return;
+//}
+const fs = require('fs')
+const electron = require('electron')
+// Module to control application life.
+const app = electron.app
+const {ipcMain} = require('electron')
+var path = require('path')
+const countdown = require('./countdown.js')
+// Module to create native browser window.
+const BrowserWindow = electron.BrowserWindow
+//Adds the main Menu to our app
+const ipc  = electron.ipcMain
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+let mainWindow
+let secondWindow
 
-(function($) {
+function createWindow () {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({titleBarStyle: 'hidden',
+    width: 1281,
+    height: 800,
+    minWidth: 1281,
+    minHeight: 800,
+    backgroundColor: '#312450',
+    show: false,
+    icon: path.join(__dirname, 'assets/icons/png/64x64.png')
+  })
 
-	skel.breakpoints({
-		xlarge:	'(max-width: 1680px)',
-		large:	'(max-width: 1280px)',
-		medium:	'(max-width: 980px)',
-		small:	'(max-width: 736px)',
-		xsmall:	'(max-width: 480px)'
-	});
+  // and load the index.html of the app.
+  mainWindow.loadURL(`file://${__dirname}/main.html`)
 
-	$(function() {
+  // Open the DevTools.
+  //mainWindow.webContents.openDevTools()
 
-		var	$window = $(window),
-			$body = $('body'),
-			$sidebar = $('#sidebar');
 
-		// Hack: Enable IE flexbox workarounds.
-			if (skel.vars.IEVersion < 12)
-				$body.addClass('is-ie');
+  // Show the mainwindow when it is loaded and ready to show
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 
-		// Disable animations/transitions until the page has loaded.
-			if (skel.canUse('transition'))
-				$body.addClass('is-loading');
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null
+  })
 
-			$window.on('load', function() {
-				window.setTimeout(function() {
-					$body.removeClass('is-loading');
-				}, 100);
-			});
+mainWindow.setMenu(null)
+}
 
-		// Forms.
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', createWindow)
 
-			// Fix: Placeholder polyfill.
-				$('form').placeholder();
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+  // On OS X it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 
-			// Hack: Activate non-input submits.
-				$('form').on('click', '.submit', function(event) {
+app.on('activate', function () {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow()
+  }
+})
 
-					// Stop propagation, default.
-						event.stopPropagation();
-						event.preventDefault();
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and require them here.
+ipc.on("countdown-start",_ =>{
+    console.log("HI testing Click Count Down");
+     countdown(count=>{
+           console.log("count,",count)
+         mainwindow.webContents.send('countdown',count)
+     })
 
-					// Submit form.
-						$(this).parents('form').submit();
-
-				});
-
-		// Prioritize "important" elements on medium.
-			skel.on('+medium -medium', function() {
-				$.prioritize(
-					'.important\\28 medium\\29',
-					skel.breakpoint('medium').active
-				);
-			});
-
-		// Sidebar.
-			if ($sidebar.length > 0) {
-
-				var $sidebar_a = $sidebar.find('a');
-
-				$sidebar_a
-					.addClass('scrolly')
-					.on('click', function() {
-
-						var $this = $(this);
-
-						// External link? Bail.
-							if ($this.attr('href').charAt(0) != '#')
-								return;
-
-						// Deactivate all links.
-							$sidebar_a.removeClass('active');
-
-						// Activate link *and* lock it (so Scrollex doesn't try to activate other links as we're scrolling to this one's section).
-							$this
-								.addClass('active')
-								.addClass('active-locked');
-
-					})
-					.each(function() {
-
-						var	$this = $(this),
-							id = $this.attr('href'),
-							$section = $(id);
-
-						// No section for this link? Bail.
-							if ($section.length < 1)
-								return;
-
-						// Scrollex.
-							$section.scrollex({
-								mode: 'middle',
-								top: '-20vh',
-								bottom: '-20vh',
-								initialize: function() {
-
-									// Deactivate section.
-										if (skel.canUse('transition'))
-											$section.addClass('inactive');
-
-								},
-								enter: function() {
-
-									// Activate section.
-										$section.removeClass('inactive');
-
-									// No locked links? Deactivate all links and activate this section's one.
-										if ($sidebar_a.filter('.active-locked').length == 0) {
-
-											$sidebar_a.removeClass('active');
-											$this.addClass('active');
-
-										}
-
-									// Otherwise, if this section's link is the one that's locked, unlock it.
-										else if ($this.hasClass('active-locked'))
-											$this.removeClass('active-locked');
-
-								}
-							});
-
-					});
-
-			}
-
-		// Scrolly.
-			$('.scrolly').scrolly({
-				speed: 1000,
-				offset: function() {
-
-					// If <=large, >small, and sidebar is present, use its height as the offset.
-						if (skel.breakpoint('large').active
-						&&	!skel.breakpoint('small').active
-						&&	$sidebar.length > 0)
-							return $sidebar.height();
-
-					return 0;
-
-				}
-			});
-
-		// Spotlights.
-			/*$('.spotlights > section')
-				.scrollex({
-					mode: 'middle',
-					top: '-10vh',
-					bottom: '-10vh',
-					initialize: function() {
-
-						// Deactivate section.
-							if (skel.canUse('transition'))
-								$(this).addClass('inactive');
-
-					},
-					enter: function() {
-
-						// Activate section.
-							$(this).removeClass('inactive');
-
-					}
-				})
-				.each(function() {
-
-					var	$this = $(this),
-						$image = $this.find('.image'),
-						$img = $image.find('img'),
-						x;
-
-					// Assign image.
-						$image.css('background-image', 'url(' + $img.attr('src') + ')');
-
-					// Set background position.
-						if (x = $img.data('position'))
-							$image.css('background-position', x);
-
-					// Hide <img>.
-						$img.hide();
-
-				});*/
-
-		// Features.
-			if (skel.canUse('transition'))
-				$('.features')
-					.scrollex({
-						mode: 'middle',
-						top: '-20vh',
-						bottom: '-20vh',
-						initialize: function() {
-
-							// Deactivate section.
-								$(this).addClass('inactive');
-
-						},
-						enter: function() {
-
-							// Activate section.
-								$(this).removeClass('inactive');
-
-						}
-					});
-
-	});
-
-})(jQuery);
+   
+})
